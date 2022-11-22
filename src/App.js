@@ -1,24 +1,28 @@
-import logo from './logo.svg';
 import './App.css';
+import 'antd/dist/reset.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { fetchMovies } from './redux/services/movieService';
+import { Button } from 'antd';
+import Layout from './components/Layout';
+import ListTable from './components/ListTable';
+import HomePage from './components/HomePage';
 
 function App() {
+  const movies = useSelector((state) => state.movies);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchMovies());
+  }, [dispatch])
+
+  console.log("movies", movies);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Layout>
+      <HomePage />
+    </Layout>
   );
 }
 
