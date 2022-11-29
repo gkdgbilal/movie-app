@@ -1,6 +1,6 @@
 import './App.scss';
 import 'antd/dist/reset.css';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { searchMovies } from './redux/services/movieService';
 import {
@@ -12,8 +12,6 @@ import Home from "./pages/Home";
 import Detail from './pages/Detail';
 
 function App() {
-  const movies = useSelector((state) => state.movies);
-
   const dispatch = useDispatch();
 
   useEffect(() => {

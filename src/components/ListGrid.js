@@ -9,9 +9,6 @@ const ListGrid = ({ list }) => {
     const { movies, loading } = useSelector((state) => state.movies);
     const dispatch = useDispatch();
     const [initLoading, setInitLoading] = useState(true);
-    const [nextPage, setNextPage] = useState(2);
-    const [loadingMore, setLoadingMore] = useState(false);
-    const [showLoadingMore, setShowLoadingMore] = useState(true);
 
     const CardContainer = styled.div`
         padding: 10px;
@@ -24,27 +21,50 @@ const ListGrid = ({ list }) => {
         width: 100%;
         height: 100%;
     `
-
     const LoadMoreContainer = styled.div`
         text-align: center;
         margin-top: 12px;
         height: 32px;
         line-height: 32px;
     `
-    useEffect(() => {
-        dispatch(getMoreMovies("har", 2));
-    }, [dispatch])
+    // useEffect(() => {
+    //     dispatch(getMoreMovies("har", 2));
+    // }, [dispatch])
 
     const onLoadMore = () => {
         setInitLoading(true);
-        setLoadingMore(true);
     };
 
-    const mergeItems = () => {
-        console.log("movies", [ ...list]);
-        // return [...movies.Search];
+    const concatMovies = () => {
+        if (movies.Search && list) {
+            return [...movies.Search, ...list].sort((a, b) => {
+                var dateA = a.Year
+                var dateB = b.Year
+                var imdbRatingA = a?.imdbRating
+                var imdbRatingB = b?.imdbRating
+
+                if (dateA > dateB) {
+                    return -1;
+                }
+                if (dateA < dateB) {
+                    return 1;
+                }
+                if (imdbRatingA > imdbRatingB) {
+                    return -1;
+                }
+                if (imdbRatingA < imdbRatingB) {
+                    return 1;
+                }
+
+            });
+        } else if (movies.Search) {
+            return movies.Search.sort((a, b) => b.Year - a.Year);
+        } else if (list) {
+            return list.sort((a, b) => b.Year - a.Year);
+        }
     }
 
+    console.log(concatMovies())
     console.log("list", list);
 
     const loadMore =
@@ -83,7 +103,7 @@ const ListGrid = ({ list }) => {
                                 xl: 5,
                                 xxl: 6,
                             }}
-                            dataSource={mergeItems()}
+                            dataSource={concatMovies()}
                             renderItem={item => (
                                 <List.Item>
                                     <MovieCard

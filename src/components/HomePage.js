@@ -18,13 +18,14 @@ import { searchMovies } from '../redux/services/movieService';
 import DeleteModal from './DeleteModal';
 import ListGrid from './ListGrid';
 import useLocalStorage from '../utils/useLocalStorage';
+import { v4 as uuidv4 } from 'uuid';
 
 const HomePage = () => {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
     const { movies } = useSelector((state) => state.movies);
     const dispatch = useDispatch();
-    const [movieList, setMovieList] = useLocalStorage('movieList', []);
+    const [movieList, setMovieList] = useLocalStorage('movieList', movies);
 
     const toggleModal = () => {
         setOpen(!open);
@@ -32,7 +33,14 @@ const HomePage = () => {
 
     const onCreate = (values) => {
         setMovieList(prev => {
-            return [...prev, values];
+            return [...prev, {
+                imdbID: uuidv4(),
+                Title: values.Title,
+                imdbRating: values.imdbRating,
+                // Poster: values.Poster,
+                Year: values.Year,
+                Actors: values.Actors,
+            }];
         });
         setOpen(false);
     };
@@ -41,10 +49,6 @@ const HomePage = () => {
         dispatch(searchMovies(value));
         setSearch(value);
     }
-
-    useEffect(() => {
-        console.log('Received values of form: ', movieList);
-    }, [movieList]);
 
     const Container = styled.div`
         display: flex;
