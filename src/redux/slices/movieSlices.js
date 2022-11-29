@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchMovies, searchMovies } from "../services/movieService";
+import { fetchMovie, searchMovies } from "../services/movieService";
 
 const movieSlice = createSlice({
     name: "movies",
@@ -11,16 +11,16 @@ const movieSlice = createSlice({
     },
     reducers: {},
     extraReducers: {
-        [fetchMovies.pending]: (state, action) => {
+        [fetchMovie.pending]: (state, action) => {
             state.status = "loading";
             state.loading = true;
         },
-        [fetchMovies.fulfilled]: (state, action) => {
+        [fetchMovie.fulfilled]: (state, action) => {
             state.status = "success";
             state.movies = action.payload;
             state.loading = false;
         },
-        [fetchMovies.rejected]: (state, action) => {
+        [fetchMovie.rejected]: (state, action) => {
             state.status = "failed";
             state.error = action.payload;
             state.loading = false;

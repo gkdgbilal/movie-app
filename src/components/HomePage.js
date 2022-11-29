@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Button,
     ConfigProvider,
@@ -16,19 +16,24 @@ import CreateForm from './CreateForm';
 import { useDispatch, useSelector } from 'react-redux';
 import { searchMovies } from '../redux/services/movieService';
 import DeleteModal from './DeleteModal';
+import ListGrid from './ListGrid';
+import useLocalStorage from '../utils/useLocalStorage';
 
 const HomePage = () => {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
-    const { movies, loading } = useSelector((state) => state.movies);
+    const { movies } = useSelector((state) => state.movies);
     const dispatch = useDispatch();
+    const [movieList, setMovieList] = useLocalStorage('movieList', []);
 
     const toggleModal = () => {
         setOpen(!open);
     };
 
     const onCreate = (values) => {
-        console.log('Received values of form: ', values);
+        setMovieList(prev => {
+            return [...prev, values];
+        });
         setOpen(false);
     };
 
@@ -36,6 +41,10 @@ const HomePage = () => {
         dispatch(searchMovies(value));
         setSearch(value);
     }
+
+    useEffect(() => {
+        console.log('Received values of form: ', movieList);
+    }, [movieList]);
 
     const Container = styled.div`
         display: flex;
@@ -114,6 +123,10 @@ const HomePage = () => {
                     onCancel={toggleModal}
                 />
             </Container>
+            <ListGrid
+                list={movieList}
+            />
+
         </ConfigProvider >
     )
 }

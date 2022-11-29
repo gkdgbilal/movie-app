@@ -1,14 +1,17 @@
-import React, { useState } from 'react'
-import { Button, Card, List, Spin } from 'antd';
+import React, { useEffect, useState } from 'react'
+import { Button, List, Spin } from 'antd';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
+import MovieCard from './MovieCard';
+import { getMoreMovies } from '../redux/services/movieService';
 
-const ListGrid = () => {
-    const { Meta } = Card;
+const ListGrid = ({ list }) => {
     const { movies, loading } = useSelector((state) => state.movies);
+    const dispatch = useDispatch();
     const [initLoading, setInitLoading] = useState(true);
-
-    console.log("movies", movies);
+    const [nextPage, setNextPage] = useState(2);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [showLoadingMore, setShowLoadingMore] = useState(true);
 
     const CardContainer = styled.div`
         padding: 10px;
@@ -21,27 +24,34 @@ const ListGrid = () => {
         width: 100%;
         height: 100%;
     `
-    const MetaContainer = styled.div`
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: .5rem;
-    `
 
-    const loadMoreContainer = styled.div`
+    const LoadMoreContainer = styled.div`
         text-align: center;
         margin-top: 12px;
         height: 32px;
         line-height: 32px;
     `
+    useEffect(() => {
+        dispatch(getMoreMovies("har", 2));
+    }, [dispatch])
 
-    const onLoadMore = () => { }
+    const onLoadMore = () => {
+        setInitLoading(true);
+        setLoadingMore(true);
+    };
+
+    const mergeItems = () => {
+        console.log("movies", [ ...list]);
+        // return [...movies.Search];
+    }
+
+    console.log("list", list);
 
     const loadMore =
         !initLoading && !loading ? (
-            <loadMoreContainer>
+            <LoadMoreContainer>
                 <Button onClick={onLoadMore}>loading more</Button>
-            </loadMoreContainer>
+            </LoadMoreContainer>
         ) : null;
 
     return (
@@ -73,32 +83,21 @@ const ListGrid = () => {
                                 xl: 5,
                                 xxl: 6,
                             }}
-                            dataSource={movies.Search}
+                            dataSource={mergeItems()}
                             renderItem={item => (
                                 <List.Item>
-                                    <Card
-                                        hoverable
-                                        style={{
-                                            width: 200,
-                                            height: 360,
-                                        }}
-                                        cover={
-                                            <img
-                                                alt="example"
-                                                src={item.Poster}
-                                                style={{
-                                                    objectFit: 'cover',
-                                                    height: 275,
-                                                }}
-                                            />
-                                        }
-                                    >
-                                        <MetaContainer>
-                                            <Meta description={item.Type.toUpperCase()} />
-                                            <Meta description={item.Year} />
-                                        </MetaContainer>
-                                        <Meta title={item.Title} />
-                                    </Card>
+                                    <MovieCard
+                                        // title={item.Title}
+                                        // year={item.Year}
+                                        // type={item.Type}
+                                        // poster={item.Poster}
+                                        // imdbID={item.imdbID}
+                                        title={item.Title}
+                                        year={item.Year}
+                                        type={item.Type}
+                                        poster={item.Poster}
+                                        imdbID={item.imdbID}
+                                    />
                                 </List.Item>
                             )}
                         />

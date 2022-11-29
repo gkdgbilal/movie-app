@@ -7,7 +7,6 @@ export default function CreateForm({ open, onCreate, onCancel }) {
     const validateMessages = {
         required: '${label} is required!',
         types: {
-            email: '${label} is not a valid email!',
             number: '${label} is not a valid number!',
         },
         number: {
@@ -46,14 +45,14 @@ export default function CreateForm({ open, onCreate, onCancel }) {
             >
                 <Form.Item
                     label="Movie Name"
-                    name={['movie', 'name']}
+                    name={'Title'}
                     rules={[{ required: true }]}
                 >
                     <Input />
                 </Form.Item>
                 <Form.Item
                     label="IMDB Point"
-                    name={['movie', 'imdb']}
+                    name={'imdbRating'}
                     rules={[
                         {
                             required: true,
@@ -70,15 +69,33 @@ export default function CreateForm({ open, onCreate, onCancel }) {
                     />
                 </Form.Item>
                 <Form.Item
+                    label="Year"
+                    name={'Year'}
+                    rules={[
+                        {
+                            required: true,
+                            type: 'number',
+                            min: 0,
+                            max: new Date().getFullYear(),
+                        },
+                    ]}
+                >
+                    <InputNumber
+                        style={{
+                            width: '100%',
+                        }}
+                    />
+                </Form.Item>
+                <Form.Item
                     label="Actors"
-                    name={['movie', 'actors']}
+                    name={'Actors'}
                     rules={[{ required: true }]}
                 >
                     <Input />
                 </Form.Item>
                 <Form.Item
                     label="Description"
-                    name={['movie', 'description']}
+                    name={'Description'}
                     rules={[{ required: true }]}
                 >
                     <TextArea rows={4} />

@@ -1,5 +1,6 @@
 import React from 'react'
 import { Layout as LayoutContainer } from 'antd';
+import { Link } from 'react-router-dom';
 
 
 const Layout = ({ children }) => {
@@ -10,7 +11,15 @@ const Layout = ({ children }) => {
                 minHeight: '100vh',
             }}
         >
-            <Header>Header</Header>
+            <Header>
+                <nav>
+                    <ul>
+                        <li>
+                            <Link to="/">Home</Link>
+                        </li>
+                    </ul>
+                </nav>
+            </Header>
             <Content>{children}</Content>
             {/* <Footer>Footer</Footer> */}
         </LayoutContainer>

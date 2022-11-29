@@ -3,10 +3,13 @@ import 'antd/dist/reset.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { searchMovies } from './redux/services/movieService';
-import Layout from './components/Layout';
-import ListTable from './components/ListTable';
-import HomePage from './components/HomePage';
-import ListGrid from './components/ListGrid';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+} from "react-router-dom";
+import Home from "./pages/Home";
+import Detail from './pages/Detail';
 
 function App() {
   const movies = useSelector((state) => state.movies);
@@ -17,13 +20,23 @@ function App() {
     dispatch(searchMovies());
   }, [dispatch])
 
-  // console.log("movies", movies);
-
   return (
-    <Layout>
-      <HomePage />
-      <ListGrid />
-    </Layout>
+    <Router>
+      <div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/detail/:id" element={<Detail />} />
+          <Route
+            path="*"
+            element={
+              <div>
+                <h2>404 Page not found</h2>
+              </div>
+            }
+          />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
