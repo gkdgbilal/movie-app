@@ -10,6 +10,8 @@ const ListGrid = ({ list }) => {
     const dispatch = useDispatch();
     const [initLoading, setInitLoading] = useState(true);
 
+    const [data, setData] = useState([]);
+
     const CardContainer = styled.div`
         padding: 10px;
     `
@@ -27,19 +29,19 @@ const ListGrid = ({ list }) => {
         height: 32px;
         line-height: 32px;
     `
-    // useEffect(() => {
-    //     dispatch(getMoreMovies("har", 2));
-    // }, [dispatch])
+    useEffect(() => {
+        setData(movies.Search);
+    }, [movies])
 
     const onLoadMore = () => {
         setInitLoading(true);
     };
 
     const concatMovies = () => {
-        if (movies.Search && list) {
-            return [...movies.Search, ...list].sort((a, b) => {
-                var dateA = a.Year
-                var dateB = b.Year
+        if (data && list) {
+            return [...data, ...list].sort((a, b) => {
+                var dateA = a.Year.toString();
+                var dateB = b.Year.toString();
                 var imdbRatingA = a?.imdbRating
                 var imdbRatingB = b?.imdbRating
 
@@ -57,15 +59,20 @@ const ListGrid = ({ list }) => {
                 }
 
             });
-        } else if (movies.Search) {
-            return movies.Search.sort((a, b) => b.Year - a.Year);
+        } else if (data) {
+            return data.sort((a, b) => b.Year - a.Year);
         } else if (list) {
             return list.sort((a, b) => b.Year - a.Year);
         }
     }
 
-    console.log(concatMovies())
-    console.log("list", list);
+    const deleteMovie = (id) => {
+        const newList = list.filter(movie => movie.imdbID !== id);
+        console.log("newList", newList);
+        setData(newList);
+    }
+
+    console.log("concatMovies", concatMovies())
 
     const loadMore =
         !initLoading && !loading ? (
@@ -117,6 +124,7 @@ const ListGrid = ({ list }) => {
                                         type={item.Type}
                                         poster={item.Poster}
                                         imdbID={item.imdbID}
+                                        deleteMovie={deleteMovie}
                                     />
                                 </List.Item>
                             )}

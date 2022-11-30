@@ -4,7 +4,8 @@ import {
     ConfigProvider,
     Input,
     Divider,
-    Tag
+    Tag,
+    Select
 } from 'antd';
 import {
     MenuOutlined,
@@ -25,7 +26,21 @@ const HomePage = () => {
     const [search, setSearch] = useState("");
     const { movies } = useSelector((state) => state.movies);
     const dispatch = useDispatch();
-    const [movieList, setMovieList] = useLocalStorage('movieList', movies);
+    const [movieList, setMovieList] = useLocalStorage('movieList', movies.Search);
+
+    const options = [];
+    const thisYear = (new Date()).getFullYear();
+    for (let i = 0; i <= 60; i++) {
+        const year = thisYear - i;
+        options.push({ label: year, value: year });
+    }
+
+    const imdbPoints = [];
+    const maxPoints = 10;
+    for (let i = 0; i <= 10; i++) {
+        const point = maxPoints - i;
+        imdbPoints.push({ label: point, value: point });
+    }
 
     const toggleModal = () => {
         setOpen(!open);
@@ -43,6 +58,10 @@ const HomePage = () => {
             }];
         });
         setOpen(false);
+    };
+
+    const handleChange = (value) => {
+        console.log(`selected ${value}`);
     };
 
     const onSearch = (value) => {
@@ -82,6 +101,12 @@ const HomePage = () => {
         justify-content: center;
         margin-left: 2rem;
     `;
+    const FilterContainer = styled.div`
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+`
 
     return (
         <ConfigProvider componentSize="large">
@@ -127,6 +152,31 @@ const HomePage = () => {
                     onCancel={toggleModal}
                 />
             </Container>
+            {
+                movieList &&
+                <FilterContainer>
+                    <Select
+                        defaultValue={new Date().getFullYear()}
+                        style={{
+                            width: 120,
+                        }}
+                        onChange={handleChange}
+                        options={
+                            options
+                        }
+                    />
+                    <Select
+                        defaultValue={10}
+                        style={{
+                            width: 120,
+                        }}
+                        onChange={handleChange}
+                        options={
+                            imdbPoints
+                        }
+                    />
+                </FilterContainer>
+            }
             <ListGrid
                 list={movieList}
             />

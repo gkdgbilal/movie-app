@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchMovie, searchMovies } from "../services/movieService";
+import { deleteMovie, fetchMovie, searchMovies, updateMovie } from "../services/movieService";
 
 const movieSlice = createSlice({
     name: "movies",
     initialState: {
         movies: [],
+        movie: {},
         status: null,
         error: null,
         loading: false,
@@ -17,7 +18,7 @@ const movieSlice = createSlice({
         },
         [fetchMovie.fulfilled]: (state, action) => {
             state.status = "success";
-            state.movies = action.payload;
+            state.movie = action.payload;
             state.loading = false;
         },
         [fetchMovie.rejected]: (state, action) => {
@@ -39,6 +40,34 @@ const movieSlice = createSlice({
             state.error = action.payload;
             state.loading = false;
         },
+        [deleteMovie.pending]: (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        },
+        [deleteMovie.fulfilled]: (state, action) => {
+            state.status = "success";
+            state.movies = action.payload;
+            state.loading = false;
+        },
+        [deleteMovie.rejected]: (state, action) => {
+            state.status = "failed";
+            state.error = action.payload;
+            state.loading = false;
+        },
+        [updateMovie.pending]: (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        },
+        [updateMovie.fulfilled]: (state, action) => {
+            state.status = "success";
+            state.movies = action.payload;
+            state.loading = false;
+        },
+        [updateMovie.rejected]: (state, action) => {
+            state.status = "failed";
+            state.error = action.payload;
+            state.loading = false;
+        }
     },
 });
 

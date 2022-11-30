@@ -1,7 +1,7 @@
 import './App.scss';
 import 'antd/dist/reset.css';
-import { useDispatch } from 'react-redux';
-import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { searchMovies } from './redux/services/movieService';
 import {
   BrowserRouter as Router,
@@ -10,13 +10,30 @@ import {
 } from "react-router-dom";
 import Home from "./pages/Home";
 import Detail from './pages/Detail';
+import { Button, Result } from 'antd';
+import useLocalStorage from './utils/useLocalStorage';
 
 function App() {
   const dispatch = useDispatch();
+  const { movies } = useSelector((state) => state.movies);
+  const [movieList, setMovieList] = useState([]);
+
+  useEffect(() => {
+    localStorage.setItem('movieList', JSON.stringify(movieList));
+  }, [movieList]);
+
+  useEffect(() => {
+    const movieList = JSON.parse(localStorage.getItem('movieList'));
+    if (movieList) {
+      setMovieList(movieList);
+    }
+  }, []);
 
   useEffect(() => {
     dispatch(searchMovies());
-  }, [dispatch])
+  }, [dispatch]);
+
+  console.log("movies", movies.Search);
 
   return (
     <Router>
@@ -27,9 +44,16 @@ function App() {
           <Route
             path="*"
             element={
-              <div>
-                <h2>404 Page not found</h2>
-              </div>
+              <Result
+                status="404"
+                title="404"
+                subTitle="Sorry, the page you visited does not exist."
+                extra={
+                  <Button type="primary" href="/">
+                    Back Home
+                  </Button>
+                }
+              />
             }
           />
         </Routes>

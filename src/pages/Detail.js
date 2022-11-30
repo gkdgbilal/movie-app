@@ -1,4 +1,4 @@
-import { Card } from 'antd'
+import { Card, Spin } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
@@ -14,15 +14,13 @@ const Detail = () => {
     const [movieId, setMovieId] = useState(params.id);
     const { id } = params;
     const dispatch = useDispatch();
-    const movie = useSelector((state) => state.movies);
+    const { movie, loading } = useSelector((state) => state.movies);
     const { Meta } = Card;
 
     useEffect(() => {
         setMovieId(id);
         dispatch(fetchMovie(movieId));
     }, [dispatch, id, movieId])
-
-    // console.log("movie", movie.movies);
 
     const CardContainer = styled.div`
         display: flex;
@@ -38,32 +36,52 @@ const Detail = () => {
     margin-bottom: .5rem;
     text-transform: uppercase;
     `
+    const SpinnerContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30%;
+    width: 100%;
+    height: 100%;
+    `
 
     return (
         <Layout>
             <CardContainer>
-                <Card
-                    hoverable
-                    style={{
-                        width: "50%",
-                        height: "50%",
-                    }}
-                    cover={
-                        <img
-                            alt={movie.movies.Title}
-                            src={movie.movies.Poster}
+                {
+                    loading ?
+                        <SpinnerContainer>
+                            <Spin
+                                tip="Loading..."
+                            />
+                        </SpinnerContainer>
+                        :
+                        <Card
+                            hoverable
                             style={{
-                                objectFit: 'cover',
+                                width: "50%",
+                                height: "50%",
+                                maxHeight: 50,
+                                maxWidth: 500,
                             }}
-                        />
-                    }
-                >
-                    <MetaContainer>
-                        <Meta description={movie.movies.Type} />
-                        <Meta description={movie.movies.Year} />
-                    </MetaContainer>
-                    <Meta title={movie.movies.Title} />
-                </Card>
+                            cover={
+                                <img
+                                    alt={movie.Title}
+                                    src={movie.Poster}
+                                    style={{
+                                        objectFit: 'cover',
+                                    }}
+                                />
+                            }
+                        >
+                            <MetaContainer>
+                                <Meta description={movie.Type} />
+                                <Meta description={movie.Year} />
+                            </MetaContainer>
+                            <Meta title={movie.Title} />
+                        </Card>
+                }
             </CardContainer>
         </Layout>
     )
