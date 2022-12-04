@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Button, List, Spin } from 'antd';
 import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import MovieCard from './MovieCard';
-import { getMoreMovies } from '../redux/services/movieService';
 
-const ListGrid = ({ list }) => {
+const ListGrid = ({ moviesList }) => {
     const { movies, loading } = useSelector((state) => state.movies);
-    const dispatch = useDispatch();
     const [initLoading, setInitLoading] = useState(true);
-
-    const [data, setData] = useState([]);
 
     const CardContainer = styled.div`
         padding: 10px;
@@ -29,17 +25,15 @@ const ListGrid = ({ list }) => {
         height: 32px;
         line-height: 32px;
     `
-    useEffect(() => {
-        setData(movies.Search);
-    }, [movies])
-
     const onLoadMore = () => {
         setInitLoading(true);
     };
 
     const concatMovies = () => {
-        if (data && list) {
-            return [...data, ...list].sort((a, b) => {
+        if (moviesList.length > 0) {
+            let arrayForSort = [...moviesList]
+
+            return arrayForSort.sort((a, b) => {
                 var dateA = a.Year.toString();
                 var dateB = b.Year.toString();
                 var imdbRatingA = a?.imdbRating
@@ -57,22 +51,10 @@ const ListGrid = ({ list }) => {
                 if (imdbRatingA < imdbRatingB) {
                     return 1;
                 }
-
+                return 0;
             });
-        } else if (data) {
-            return data.sort((a, b) => b.Year - a.Year);
-        } else if (list) {
-            return list.sort((a, b) => b.Year - a.Year);
         }
     }
-
-    const deleteMovie = (id) => {
-        const newList = list.filter(movie => movie.imdbID !== id);
-        console.log("newList", newList);
-        setData(newList);
-    }
-
-    console.log("concatMovies", concatMovies())
 
     const loadMore =
         !initLoading && !loading ? (
@@ -124,7 +106,6 @@ const ListGrid = ({ list }) => {
                                         type={item.Type}
                                         poster={item.Poster}
                                         imdbID={item.imdbID}
-                                        deleteMovie={deleteMovie}
                                     />
                                 </List.Item>
                             )}

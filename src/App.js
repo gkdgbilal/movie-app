@@ -2,7 +2,7 @@ import './App.scss';
 import 'antd/dist/reset.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { searchMovies } from './redux/services/movieService';
+import { fetchMovies } from './redux/services/movieService';
 import {
   BrowserRouter as Router,
   Routes,
@@ -16,24 +16,22 @@ import useLocalStorage from './utils/useLocalStorage';
 function App() {
   const dispatch = useDispatch();
   const { movies } = useSelector((state) => state.movies);
-  const [movieList, setMovieList] = useState([]);
+  // const [movieList, setMovieList] = useState([]);
+
+  // useEffect(() => {
+  //   localStorage.setItem('movieList', JSON.stringify(movieList));
+  // }, [movieList]);
+
+  // useEffect(() => {
+  //   const movieList = JSON.parse(localStorage.getItem('movieList'));
+  //   if (movieList) {
+  //     setMovieList(movieList);
+  //   }
+  // }, []);
 
   useEffect(() => {
-    localStorage.setItem('movieList', JSON.stringify(movieList));
-  }, [movieList]);
-
-  useEffect(() => {
-    const movieList = JSON.parse(localStorage.getItem('movieList'));
-    if (movieList) {
-      setMovieList(movieList);
-    }
+    dispatch(fetchMovies());
   }, []);
-
-  useEffect(() => {
-    dispatch(searchMovies());
-  }, [dispatch]);
-
-  console.log("movies", movies.Search);
 
   return (
     <Router>

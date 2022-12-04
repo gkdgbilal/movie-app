@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { deleteMovie, fetchMovie, searchMovies, updateMovie } from "../services/movieService";
+import { addMovie, deleteMovie, fetchMovie, fetchMovies, searchMovies, updateMovie } from "../services/movieService";
 
 const movieSlice = createSlice({
     name: "movies",
@@ -26,16 +26,16 @@ const movieSlice = createSlice({
             state.error = action.payload;
             state.loading = false;
         },
-        [searchMovies.pending]: (state, action) => {
+        [fetchMovies.pending]: (state, action) => {
             state.status = "loading";
             state.loading = true;
         },
-        [searchMovies.fulfilled]: (state, action) => {
+        [fetchMovies.fulfilled]: (state, action) => {
             state.status = "success";
             state.movies = action.payload;
             state.loading = false;
         },
-        [searchMovies.rejected]: (state, action) => {
+        [fetchMovies.rejected]: (state, action) => {
             state.status = "failed";
             state.error = action.payload;
             state.loading = false;
@@ -46,7 +46,7 @@ const movieSlice = createSlice({
         },
         [deleteMovie.fulfilled]: (state, action) => {
             state.status = "success";
-            state.movies = action.payload;
+            state.movies = state.movies.filter((movie) => movie.imdbID !== action.payload.imdbID);
             state.loading = false;
         },
         [deleteMovie.rejected]: (state, action) => {
@@ -67,7 +67,35 @@ const movieSlice = createSlice({
             state.status = "failed";
             state.error = action.payload;
             state.loading = false;
-        }
+        },
+        [addMovie.pending]: (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        },
+        [addMovie.fulfilled]: (state, action) => {
+            state.status = "success";
+            state.movies.push(action.payload);
+            state.loading = false;
+        },
+        [addMovie.rejected]: (state, action) => {
+            state.status = "failed";
+            state.error = action.payload;
+            state.loading = false;
+        },
+        [searchMovies.pending]: (state, action) => {
+            state.status = "loading";
+            state.loading = true;
+        },
+        [searchMovies.fulfilled]: (state, action) => {
+            state.status = "success";
+            state.movies = action.payload;
+            state.loading = false;
+        },
+        [searchMovies.rejected]: (state, action) => {
+            state.status = "failed";
+            state.error = action.payload;
+            state.loading = false;
+        },
     },
 });
 

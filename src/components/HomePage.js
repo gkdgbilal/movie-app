@@ -1,32 +1,54 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
     Button,
     ConfigProvider,
     Input,
     Divider,
-    Tag,
-    Select
+    Select,
+    Popconfirm
 } from 'antd';
 import {
     MenuOutlined,
     PlusOutlined,
+    QuestionCircleOutlined,
 
 } from '@ant-design/icons';
 import styled from 'styled-components';
 import CreateForm from './CreateForm';
 import { useDispatch, useSelector } from 'react-redux';
-import { searchMovies } from '../redux/services/movieService';
-import DeleteModal from './DeleteModal';
+import { addMovie, fetchMovies, searchMovies } from '../redux/services/movieService';
 import ListGrid from './ListGrid';
 import useLocalStorage from '../utils/useLocalStorage';
 import { v4 as uuidv4 } from 'uuid';
+import { message } from 'antd';
 
 const HomePage = () => {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
     const { movies } = useSelector((state) => state.movies);
     const dispatch = useDispatch();
-    const [movieList, setMovieList] = useLocalStorage('movieList', movies.Search);
+    const [movieList, setMovieList] = useLocalStorage('movieList', []);
+    const [filteredMovies, setFilteredMovies] = useState([]);
+
+    const addDataHandler = (values) => {
+        const newMovies = {
+            imdbID: uuidv4(),
+            Title: values.Title,
+            imdbRating: values.imdbRating,
+            // Poster: values.Poster,
+            Year: values.Year,
+            Actors: values.Actors,
+            Description: values.Description,
+        }
+
+        dispatch(addMovie({
+            formValues: newMovies,
+            movies: movieList
+        }))
+
+        dispatch(fetchMovies());
+
+    }
 
     const options = [];
     const thisYear = (new Date()).getFullYear();
@@ -46,22 +68,25 @@ const HomePage = () => {
         setOpen(!open);
     };
 
-    const onCreate = (values) => {
-        setMovieList(prev => {
-            return [...prev, {
-                imdbID: uuidv4(),
-                Title: values.Title,
-                imdbRating: values.imdbRating,
-                // Poster: values.Poster,
-                Year: values.Year,
-                Actors: values.Actors,
-            }];
-        });
-        setOpen(false);
+    const handleChangeByYear = (value) => {
+        console.log(`selected ${value}`, typeof value);
+        const arr = movies.filter((movie) => movie.Year.toString() === value.toString())
+        if (arr.length > 0) {
+            setFilteredMovies(arr)
+        } else {
+            message.warning('Movie not found.');
+            setFilteredMovies(movies)
+        }
     };
-
-    const handleChange = (value) => {
-        console.log(`selected ${value}`);
+    const handleChangeByPoint = (value) => {
+        console.log(`selected ${value}`, typeof value);
+        const arr = movies.filter((movie) => movie.imdbRating === value)
+        if (arr.length > 0) {
+            setFilteredMovies(arr)
+        } else {
+            message.warning('Movie not found.');
+            setFilteredMovies(movies)
+        }
     };
 
     const onSearch = (value) => {
@@ -122,10 +147,12 @@ const HomePage = () => {
                     <Button
                         type="primary"
                         icon={<MenuOutlined />}
+                        onClick={() => {
+                            console.log("movieList", movies.filter((movie) => movie.Year === "2022"));
+                        }}
                     >
                         Movie List
                     </Button>
-                    <DeleteModal />
                 </ButtonGroup>
                 <InputContainer>
                     <Input.Search
@@ -136,19 +163,19 @@ const HomePage = () => {
                         loading={false}
                         onSearch={onSearch}
                     />
-                    {
+                    {/* {
                         movies.totalResults &&
                         <DescContainer>
                             <Tag color="blue">
                                 {`${movies.totalResults > 1 ? "Results" : "Result"} : ${movies.Search.length} in ${movies.totalResults} for "${search}"`}
                             </Tag>
                         </DescContainer>
-                    }
+                    } */}
                 </InputContainer>
                 <Divider />
                 <CreateForm
                     open={open}
-                    onCreate={onCreate}
+                    onCreate={addDataHandler}
                     onCancel={toggleModal}
                 />
             </Container>
@@ -156,21 +183,21 @@ const HomePage = () => {
                 movieList &&
                 <FilterContainer>
                     <Select
-                        defaultValue={new Date().getFullYear()}
+                        placeholder="Select year"
                         style={{
-                            width: 120,
+                            width: 130,
                         }}
-                        onChange={handleChange}
+                        onChange={handleChangeByYear}
                         options={
                             options
                         }
                     />
                     <Select
-                        defaultValue={10}
+                        placeholder="Select point"
                         style={{
-                            width: 120,
+                            width: 130,
                         }}
-                        onChange={handleChange}
+                        onChange={handleChangeByPoint}
                         options={
                             imdbPoints
                         }
@@ -178,7 +205,7 @@ const HomePage = () => {
                 </FilterContainer>
             }
             <ListGrid
-                list={movieList}
+                moviesList={filteredMovies.length > 0 ? filteredMovies : movies}
             />
 
         </ConfigProvider >

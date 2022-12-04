@@ -1,9 +1,10 @@
 import { Card } from 'antd'
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import { DeleteOutlined } from '@ant-design/icons';
-const MovieCard = ({ imdbID, poster, type, year, title, deleteMovie }) => {
+import DeleteModal from './DeleteModal';
+import EditModal from './EditModal';
+const MovieCard = ({ imdbID, poster, type, year, title }) => {
     const { Meta } = Card;
 
     let navigate = useNavigate();
@@ -25,6 +26,7 @@ const MovieCard = ({ imdbID, poster, type, year, title, deleteMovie }) => {
             hoverable
             style={{
                 height: 360,
+                minWidth: 240,
             }}
             cover={
                 <>
@@ -38,19 +40,11 @@ const MovieCard = ({ imdbID, poster, type, year, title, deleteMovie }) => {
                         }}
                         onClick={routeChange}
                     />
-                    <DeleteOutlined
-                        onClick={() => deleteMovie(imdbID)}
-                        style={{
-                            width: 30,
-                            position: 'absolute',
-                            top: 0,
-                            right: 0,
-                            fontSize: '1.5rem',
-                            color: 'red',
-                            cursor: 'pointer',
-                            backgroundColor: '#CCC',
-                            opacity: .5,
-                        }}
+                    <EditModal
+                        imdbID={imdbID}
+                    />
+                    <DeleteModal
+                        imdbID={imdbID}
                     />
                 </>
             }

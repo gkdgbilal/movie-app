@@ -1,9 +1,11 @@
+import { Form, Input, InputNumber, Modal } from 'antd';
 import React from 'react'
-import { Button, Form, Input, InputNumber, Modal, Radio } from 'antd';
 
-export default function CreateForm({ open, onCreate, onCancel }) {
+const EditForm = ({ imdbID, open, onUpdate, onCancel }) => {
+    const movie = JSON.parse(localStorage.getItem("movieList"));
     const [form] = Form.useForm();
     const { TextArea } = Input;
+
     const validateMessages = {
         required: '${label} is required!',
         types: {
@@ -14,11 +16,13 @@ export default function CreateForm({ open, onCreate, onCancel }) {
         },
     };
 
+    const filteredMovie = movie.filter(movie => movie.imdbID === imdbID);
+
     return (
         <Modal
             open={open}
-            title="Add Movie"
-            okText="Create"
+            title="Edit Movie"
+            okText="Update"
             cancelText="Cancel"
             onCancel={onCancel}
             onOk={() => {
@@ -26,7 +30,15 @@ export default function CreateForm({ open, onCreate, onCancel }) {
                     .validateFields()
                     .then((values) => {
                         form.resetFields();
-                        onCreate(values);
+                        onUpdate({
+                            imdbID: imdbID,
+                            Title: values.Title,
+                            imdbRating: filteredMovie.imdbRating ? filteredMovie.imdbRating : values.imdbRating,
+                            // Poster: values.Poster,
+                            Year: filteredMovie.Year ? filteredMovie.Year : "N/A",
+                            Actors: filteredMovie.Actors ? filteredMovie.Actors : "N/A",
+                            Description: filteredMovie.Description ? filteredMovie.Description : "N/A",
+                        });
                         onCancel();
                     })
                     .catch((info) => {
@@ -45,11 +57,22 @@ export default function CreateForm({ open, onCreate, onCancel }) {
                 validateMessages={validateMessages}
             >
                 <Form.Item
+                    label="Movie ID"
+                    name={'imdbID'}
+                >
+                    <Input
+                        disabled
+                        placeholder={imdbID}
+                    />
+                </Form.Item>
+                <Form.Item
                     label="Movie Name"
                     name={'Title'}
                     rules={[{ required: true }]}
                 >
-                    <Input />
+                    <Input
+                        defaultValue={filteredMovie.Title}
+                    />
                 </Form.Item>
                 <Form.Item
                     label="IMDB Point"
@@ -67,6 +90,7 @@ export default function CreateForm({ open, onCreate, onCancel }) {
                         style={{
                             width: '100%',
                         }}
+                        defaultValue={filteredMovie.imdbRating}
                     />
                 </Form.Item>
                 <Form.Item
@@ -74,7 +98,6 @@ export default function CreateForm({ open, onCreate, onCancel }) {
                     name={'Year'}
                     rules={[
                         {
-                            required: true,
                             type: 'number',
                             min: 0,
                             max: new Date().getFullYear(),
@@ -85,23 +108,29 @@ export default function CreateForm({ open, onCreate, onCancel }) {
                         style={{
                             width: '100%',
                         }}
+                        disabled
+                        defaultValue={filteredMovie.Year}
                     />
                 </Form.Item>
                 <Form.Item
                     label="Actors"
                     name={'Actors'}
-                    rules={[{ required: true }]}
                 >
-                    <Input />
+                    <Input
+                        disabled
+                        defaultValue={filteredMovie.Actors}
+                    />
                 </Form.Item>
                 <Form.Item
                     label="Description"
                     name={'Description'}
-                    rules={[{ required: true }]}
                 >
-                    <TextArea rows={4} />
+                    <TextArea rows={4} disabled
+                        defaultValue={filteredMovie.Description}
+                    />
                 </Form.Item>
             </Form>
         </Modal>
     )
 }
+export default EditForm
